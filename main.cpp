@@ -51,6 +51,33 @@ bool isSorted(const vector<int> &data) {
     return true;
 }
 
+// Iterpimo rikiavimo algoritmas
+void insertionSort(vector<int> &data, SortStats& stats) {
+    int n = data.size();
+    for (int i = 1; i < n; i++) {
+        int key = data[i];
+        stats.moves++; //key reiksmes issaugojimas laikomas perkelimu
+
+        int j = i - 1;
+
+        // Elementai, didesni uz key, pastumiami viena pozicija i desine
+        while (j >= 0) {
+            stats.comparisons++;
+            if (data[j] > key) {
+                data[j + 1] = data[j];
+                stats.moves++;
+                j--;
+            }
+            else {
+                break;
+            }
+        }
+
+        data[j + 1] = key;
+        stats.moves++;
+    }
+}
+
 int main() {
     vector<int> sizes = {5000, 10000, 50000};
 
@@ -82,13 +109,44 @@ int main() {
     }
     cout << endl;
 
-    cout << "Ar sortedData surikiuotas?";
+    cout << "Ar sortedData surikiuotas? ";
     if (isSorted(sortedData)) {
         cout << "Taip" << endl;
     }
     else {
         cout << "Ne" << endl;
     }
+
+    cout << endl;
+    cout << "Testuojamas Insertion Sort: " << endl;
+
+    vector<int> testData = generateRandomData(10);
+
+    cout << "Pries rikiavima: ";
+    for (int i = 0; i < testData.size(); i++) {
+        cout << testData[i] << " ";
+    }
+    cout << endl;
+
+    SortStats insertionStats;
+    insertionSort(testData, insertionStats);
+
+    cout << "Po rikiavimo: ";
+    for (int i = 0; i < testData.size(); i++) {
+        cout << testData[i] << " ";
+    }
+    cout << endl;
+
+    cout << "Ar surikiuota? ";
+    if (isSorted(testData)) {
+        cout << "Taip" << endl;
+    }
+    else {
+        cout << "Ne" << endl;
+    }
+
+    cout << "Palyginimu skaicius: " << insertionStats.comparisons << endl;
+    cout << "Perkelimu skaicius: " << insertionStats.moves << endl;
 
     return 0;
 }
