@@ -4,7 +4,7 @@
 #include <random>
 using namespace std;
 
-const int REPEAT_COUNT = 5;
+constexpr int REPEAT_COUNT = 5;
 
 struct SortStats {
     long long comparisons = 0;
@@ -53,7 +53,7 @@ bool isSorted(const vector<int> &data) {
 
 // Iterpimo rikiavimo algoritmas
 void insertionSort(vector<int> &data, SortStats& stats) {
-    int n = data.size();
+    int n = static_cast<int>(data.size());
     for (int i = 1; i < n; i++) {
         int key = data[i];
         stats.moves++; //key reiksmes issaugojimas laikomas perkelimu
@@ -75,6 +75,75 @@ void insertionSort(vector<int> &data, SortStats& stats) {
 
         data[j + 1] = key;
         stats.moves++;
+    }
+}
+
+// Sujungia dvi surikiuotas masyvo dalis
+void merge(vector<int>& data, int left, int middle, int right, SortStats& stats) {
+    int leftSize = middle - left + 1;
+    int rightSize = right - middle;
+
+    vector<int> leftPart(leftSize);
+    vector<int> rightPart(rightSize);
+
+    //Kopijuoja kaire masyvo dali i pagalbini masyva
+    for (int i = 0; i < leftSize; i++) {
+        leftPart[i] = data[i + left];
+        stats.moves++;
+    }
+
+    // Kopijuoja desine masyvo dali i pagalbini masyva
+    for (int i = 0; i < rightSize; i++) {
+        rightPart[i] = data[middle + 1 + i];
+        stats.moves++;
+    }
+
+    int i = 0;
+    int j = 0;
+    int k = left;
+
+    //Sujungia dvi surikiuotas dalis
+    while (i < leftSize && j < rightSize) {
+        stats.comparisons++;
+
+        if (leftPart[i] <= rightPart[j]) {
+            data[k] = leftPart[i];
+            i++;
+        }
+        else {
+            data[k] = rightPart[j];
+            j++;
+        }
+
+        stats.moves++;
+        k++;
+    }
+
+    // Jei desineje liko elementu, juos perkeliam
+    while (j < rightSize) {
+        data[k] = rightPart[j];
+        stats.moves++;
+        j++;
+        k++;
+    }
+
+    // Jei kaireje liko elementu, juos perkeliam
+    while (i < leftSize) {
+        data[k] = leftPart[i];
+        stats.moves++;
+        i++;
+        k++;
+    }
+}
+
+// Suliejimo rikiavimo algoritmas
+
+void mergeSort(vector<int>& data, int left, int right, SortStats& stats) {
+    if (left < right) {
+        int middle = left + (right - left) / 2;
+        mergeSort(data, left, middle, stats);
+        mergeSort(data, middle + 1, right, stats);
+        merge(data, left, middle, right, stats);
     }
 }
 
@@ -147,6 +216,37 @@ int main() {
 
     cout << "Palyginimu skaicius: " << insertionStats.comparisons << endl;
     cout << "Perkelimu skaicius: " << insertionStats.moves << endl;
+    cout << endl;
+
+    cout << "Testuojamas MergeSort: " << endl;
+    vector<int> mergeTestData = generateRandomData(10);
+
+    cout << "Pries rikiavima: ";
+    for (int i = 0; i < mergeTestData.size(); i++) {
+        cout << mergeTestData[i] << " ";
+    }
+    cout << endl;
+
+    SortStats mergeStats;
+
+    mergeSort(mergeTestData, 0, static_cast<int>(mergeTestData.size()) - 1, mergeStats);
+
+    cout << "Po rikiavimo: ";
+    for (int i = 0; i < mergeTestData.size(); i++) {
+        cout << mergeTestData[i] << " ";
+    }
+    cout << endl;
+
+    cout << "Ar surikiuota? ";
+    if (isSorted(mergeTestData)) {
+        cout << "Taip" << endl;
+    }
+    else {
+        cout << "Ne" << endl;
+    }
+
+    cout << "Palyginimu skaicius: " << mergeStats.comparisons << endl;
+    cout << "Perkelimu skaicius: " << mergeStats.moves << endl;
 
     return 0;
 }
