@@ -241,104 +241,42 @@ TestResult testMergeSort(const vector<int>& originalData, const string& dataType
 
 int main() {
     vector<int> sizes = {5000, 10000, 50000};
+    vector<TestResult> results;
 
     cout << "RIKIAVIMO ALGORITMU LYGINAMOJI ANALIZE" << endl;
     cout << "Duomenu dydziai: 5000, 10000, 50000." << endl;
     cout << "Kartojimu skaicius: " << REPEAT_COUNT << endl;
     cout << endl;
 
-    //Testas ar veikia
-    vector<int> randomData = generateRandomData(10);
-    vector<int> sortedData = generateSortedData(10);
-    vector<int> reversedData = generateReversedData(10);
+    for (int sizeIndex = 0; sizeIndex < sizes.size(); sizeIndex++) {
+        int currentSize = sizes[sizeIndex];
 
-    cout << "Atsitiktiniai duomenys: ";
-    for (int i = 0; i < randomData.size(); i++) {
-        cout << randomData[i] << " ";
-    }
-    cout << endl;
+        cout << "Testuojamas duomenu dydis: " << currentSize << endl;
 
-    cout << "Surikiuoti duomenys: ";
-    for (int i = 0; i < sortedData.size(); i++) {
-        cout << sortedData[i] << " ";
-    }
-    cout << endl;
+        for (int run = 1; run <= REPEAT_COUNT; run++) {
+            cout << "  Bandymas: " << run << endl;
 
-    cout << "Atvirkstiniai duomenys: ";
-    for (int i = 0; i < reversedData.size(); i++) {
-        cout << reversedData[i] << " ";
-    }
-    cout << endl;
+            vector<int> randomData = generateRandomData(currentSize);
+            vector<int> sortedData = generateSortedData(currentSize);
+            vector<int> reversedData = generateReversedData(currentSize);
 
-    cout << "Ar sortedData surikiuotas? ";
-    if (isSorted(sortedData)) {
-        cout << "Taip" << endl;
-    }
-    else {
-        cout << "Ne" << endl;
+            results.push_back(testInsertionSort(randomData, "Random", run));
+            results.push_back(testMergeSort(randomData, "Random", run));
+
+            results.push_back(testInsertionSort(sortedData, "Sorted", run));
+            results.push_back(testMergeSort(sortedData, "Sorted", run));
+
+            results.push_back(testInsertionSort(reversedData, "Reversed", run));
+            results.push_back(testMergeSort(reversedData, "Reversed", run));
+        }
+
+        cout << endl;
     }
 
-    cout << endl;
-    cout << "Testuojamas Insertion Sort: " << endl;
+    saveResultsToCSV(results, "results.csv");
 
-    vector<int> testData = generateRandomData(10);
-
-    cout << "Pries rikiavima: ";
-    for (int i = 0; i < testData.size(); i++) {
-        cout << testData[i] << " ";
-    }
-    cout << endl;
-
-    SortStats insertionStats;
-    insertionSort(testData, insertionStats);
-
-    cout << "Po rikiavimo: ";
-    for (int i = 0; i < testData.size(); i++) {
-        cout << testData[i] << " ";
-    }
-    cout << endl;
-
-    cout << "Ar surikiuota? ";
-    if (isSorted(testData)) {
-        cout << "Taip" << endl;
-    }
-    else {
-        cout << "Ne" << endl;
-    }
-
-    cout << "Palyginimu skaicius: " << insertionStats.comparisons << endl;
-    cout << "Perkelimu skaicius: " << insertionStats.moves << endl;
-    cout << endl;
-
-    cout << "Testuojamas MergeSort: " << endl;
-    vector<int> mergeTestData = generateRandomData(10);
-
-    cout << "Pries rikiavima: ";
-    for (int i = 0; i < mergeTestData.size(); i++) {
-        cout << mergeTestData[i] << " ";
-    }
-    cout << endl;
-
-    SortStats mergeStats;
-
-    mergeSort(mergeTestData, 0, static_cast<int>(mergeTestData.size()) - 1, mergeStats);
-
-    cout << "Po rikiavimo: ";
-    for (int i = 0; i < mergeTestData.size(); i++) {
-        cout << mergeTestData[i] << " ";
-    }
-    cout << endl;
-
-    cout << "Ar surikiuota? ";
-    if (isSorted(mergeTestData)) {
-        cout << "Taip" << endl;
-    }
-    else {
-        cout << "Ne" << endl;
-    }
-
-    cout << "Palyginimu skaicius: " << mergeStats.comparisons << endl;
-    cout << "Perkelimu skaicius: " << mergeStats.moves << endl;
+    cout << "Eksperimentas baigtas." << endl;
+    cout << "Rezultatai issaugoti faile results.csv" << endl;
 
     return 0;
 }
