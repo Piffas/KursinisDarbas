@@ -2,11 +2,24 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <chrono>
+#include <fstream>
+#include <string>
 using namespace std;
 
 constexpr int REPEAT_COUNT = 5;
 
 struct SortStats {
+    long long comparisons = 0;
+    long long moves = 0;
+};
+
+struct TestResult {
+    string algorithmName;
+    string dataType;
+    int size = 0;
+    int runNumber = 0;
+    long long timeMicroseconds = 0;
     long long comparisons = 0;
     long long moves = 0;
 };
@@ -145,6 +158,85 @@ void mergeSort(vector<int>& data, int left, int right, SortStats& stats) {
         mergeSort(data, middle + 1, right, stats);
         merge(data, left, middle, right, stats);
     }
+}
+
+void saveResultsToCSV(const vector<TestResult>& results, const string& fileName) {
+    ofstream file(fileName);
+
+    if (!file) {
+        cout << "Klaida: nepavyko sukurti rezultatu failo." << endl;
+        return;
+    }
+
+    file << "Algorithm,DataType,Size,Run,TimeMicroseconds,Comparisons,Moves\n";
+
+    for (int i = 0; i < results.size(); i++) {
+        file << results[i].algorithmName << ","
+             << results[i].dataType << ","
+             << results[i].size << ","
+             << results[i].runNumber << ","
+             << results[i].timeMicroseconds << ","
+             << results[i].comparisons << ","
+             << results[i].moves << "\n";
+    }
+
+    file.close();
+}
+
+TestResult testInsertionSort(const vector<int>& originalData, const string& dataType, int runNumber) {
+    vector<int> data = originalData;
+    SortStats stats;
+
+    auto start = chrono::high_resolution_clock::now();
+
+    insertionSort(data, stats);
+
+    auto end = chrono::high_resolution_clock::now();
+
+    long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+    TestResult result;
+    result.algorithmName = "Insertion Sort";
+    result.dataType = dataType;
+    result.size = static_cast<int>(originalData.size());
+    result.runNumber = runNumber;
+    result.timeMicroseconds = duration;
+    result.comparisons = stats.comparisons;
+    result.moves = stats.moves;
+
+    if (!isSorted(data)) {
+        cout << "Klaida: Insertion Sort nesurikiavo duomenu!" << endl;
+    }
+
+    return result;
+}
+
+TestResult testMergeSort(const vector<int>& originalData, const string& dataType, int runNumber) {
+    vector<int> data = originalData;
+    SortStats stats;
+
+    auto start = chrono::high_resolution_clock::now();
+
+    mergeSort(data, 0, static_cast<int>(data.size()) - 1, stats);
+
+    auto end = chrono::high_resolution_clock::now();
+
+    long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+    TestResult result;
+    result.algorithmName = "Merge Sort";
+    result.dataType = dataType;
+    result.size = static_cast<int>(originalData.size());
+    result.runNumber = runNumber;
+    result.timeMicroseconds = duration;
+    result.comparisons = stats.comparisons;
+    result.moves = stats.moves;
+
+    if (!isSorted(data)) {
+        cout << "Klaida: Merge Sort nesurikiavo duomenu!" << endl;
+    }
+
+    return result;
 }
 
 int main() {
