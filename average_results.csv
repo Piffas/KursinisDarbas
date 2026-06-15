@@ -1,0 +1,19 @@
+Algorithm,DataType,Size,AverageTimeMicroseconds,AverageComparisons,AverageMoves
+Insertion Sort,Random,5000,34022,6277200,6282207
+Merge Sort,Random,5000,1778,55205,123616
+Insertion Sort,Sorted,5000,31,4999,9998
+Merge Sort,Sorted,5000,1296,32004,123616
+Insertion Sort,Reversed,5000,63178,12497500,12507498
+Merge Sort,Reversed,5000,1329,29804,123616
+Insertion Sort,Random,10000,123816,25028416,25038424
+Merge Sort,Random,10000,3366,120421,267232
+Insertion Sort,Sorted,10000,52,9999,19998
+Merge Sort,Sorted,10000,2566,69008,267232
+Insertion Sort,Reversed,10000,257542,49995000,50014998
+Merge Sort,Reversed,10000,2576,64608,267232
+Insertion Sort,Random,50000,3193725,627023771,627073779
+Merge Sort,Random,50000,19442,718232,1568928
+Insertion Sort,Sorted,50000,269,49999,99998
+Merge Sort,Sorted,50000,14287,401952,1568928
+Insertion Sort,Reversed,50000,6378891,1249975000,1250074998
+Merge Sort,Reversed,50000,13824,382512,1568928
